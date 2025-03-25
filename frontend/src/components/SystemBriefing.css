@@ -1,0 +1,125 @@
+.system-briefing {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.briefing-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.briefing-header h2 {
+  font-size: 2.5rem;
+  color: #1F2937;
+  margin-bottom: 0.5rem;
+}
+
+[data-theme="dark"] .briefing-header h2 {
+  color: #E2E8F0;
+}
+
+.briefing-header .subtitle {
+  font-size: 1.25rem;
+  color: #6B7280;
+}
+
+[data-theme="dark"] .briefing-header .subtitle {
+  color: #94A3B8;
+}
+
+.briefing-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.briefing-section {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease;
+}
+
+[data-theme="dark"] .briefing-section {
+  background-color: #1E293B;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+.briefing-section:hover {
+  transform: translateY(-4px);
+}
+
+.section-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #60A5FA;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.section-icon svg {
+  color: white;
+}
+
+.briefing-section h3 {
+  font-size: 1.5rem;
+  color: #1F2937;
+  margin-bottom: 1rem;
+}
+
+[data-theme="dark"] .briefing-section h3 {
+  color: #E2E8F0;
+}
+
+.briefing-section p {
+  color: #4B5563;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+[data-theme="dark"] .briefing-section p {
+  color: #94A3B8;
+}
+
+.briefing-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.briefing-section li {
+  color: #4B5563;
+  margin-bottom: 0.75rem;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+[data-theme="dark"] .briefing-section li {
+  color: #94A3B8;
+}
+
+.briefing-section li::before {
+  content: "•";
+  color: #60A5FA;
+  position: absolute;
+  left: 0;
+}
+
+@media (max-width: 768px) {
+  .system-briefing {
+    padding: 1rem;
+  }
+
+  .briefing-header h2 {
+    font-size: 2rem;
+  }
+
+  .briefing-content {
+    grid-template-columns: 1fr;
+  }
+} 

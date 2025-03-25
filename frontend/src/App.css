@@ -1,0 +1,135 @@
+.app {
+  min-height: 100vh;
+  background-color: #F0F9FF; /* Very light blue background */
+  transition: background-color 0.3s ease;
+}
+
+[data-theme="dark"] .app {
+  background-color: #0F172A;
+}
+
+.main-content {
+  padding-top: 5rem;
+  min-height: calc(100vh - 5rem);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  background: linear-gradient(45deg, #60A5FA, #34D399); /* Light blue to light green */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  font-size: 1.125rem;
+  color: #6B7280;
+}
+
+[data-theme="dark"] .subtitle {
+  color: #94A3B8;
+}
+
+.alert {
+  background-color: #FEE2E2; /* Light red */
+  border: 1px solid #FCA5A5; /* Slightly darker light red */
+  color: #DC2626;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+[data-theme="dark"] .alert {
+  background-color: #7F1D1D;
+  border-color: #991B1B;
+  color: #FCA5A5;
+}
+
+.content-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.upload-section {
+  background-color: #E0F2FE; /* Very light blue */
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #60A5FA; /* Light blue accent */
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .upload-section {
+  background-color: #1E293B;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  border-top-color: #3B82F6;
+}
+
+.records-section {
+  background-color: #ECFDF5; /* Very light green */
+  padding: 2rem;
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border-top: 4px solid #34D399; /* Light green accent */
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .records-section {
+  background-color: #064E3B;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  border-top-color: #059669;
+}
+
+.upload-section h2 {
+  font-size: 1.5rem;
+  color: #60A5FA; /* Light blue */
+  margin-bottom: 1.5rem;
+}
+
+[data-theme="dark"] .upload-section h2 {
+  color: #60A5FA;
+}
+
+.records-section h2 {
+  font-size: 1.5rem;
+  color: #34D399; /* Light green */
+  margin-bottom: 1.5rem;
+}
+
+[data-theme="dark"] .records-section h2 {
+  color: #34D399;
+}
+
+/* Add some hover effects */
+.upload-section:hover,
+.records-section:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease;
+}
+
+@media (max-width: 768px) {
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .container {
+    padding: 1rem;
+  }
+  
+  .header h1 {
+    font-size: 2rem;
+  }
+} 

@@ -1,4 +1,5 @@
 import { ethers } from 'ethers';
+import { AppError, ErrorCodes } from "./utils/errorHandler";
 
 // TODO: Replace with your actual contract address and ABI
 const CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000"; // Temporary zero address
@@ -94,74 +95,126 @@ const switchNetwork = async () => {
 
 export const initializeContract = async () => {
     try {
-        // Check if MetaMask is installed
         if (!window.ethereum) {
-            throw new Error("Please install MetaMask to use this application");
+            throw new AppError(
+                "MetaMask is not installed. Please install MetaMask to use this application.",
+                ErrorCodes.WALLET_NOT_CONNECTED
+            );
         }
 
-        // Request account access
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-        // Check and switch network if needed
-        const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-        if (chainId !== REQUIRED_NETWORK.chainId) {
-            const switched = await switchNetwork();
-            if (!switched) {
-                throw new Error(`Please switch to ${REQUIRED_NETWORK.chainName} network in MetaMask`);
-            }
-        }
-
-        // Create a provider
+        await window.ethereum.request({ method: "eth_requestAccounts" });
         provider = new ethers.BrowserProvider(window.ethereum);
-        
-        // Get the signer
         signer = await provider.getSigner();
-
-        // Create contract instance
+        
         contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-
         return true;
     } catch (error) {
-        console.error("Error initializing contract:", error);
-        alert(error.message || "Error connecting to MetaMask");
-        return false;
+        if (error.code === 4001) {
+            throw new AppError(
+                "Please connect your wallet to use this application",
+                ErrorCodes.WALLET_NOT_CONNECTED,
+                error
+            );
+        }
+        throw new AppError(
+            "Failed to initialize contract",
+            ErrorCodes.CONTRACT_INITIALIZATION_FAILED,
+            error
+        );
     }
 };
 
 export const addRecordToBlockchain = async (description, ipfsHash) => {
     try {
         if (!contract) {
-            const initialized = await initializeContract();
-            if (!initialized) {
-                throw new Error("Failed to initialize contract");
-            }
+            throw new AppError(
+                "Contract not initialized. Please connect your wallet first.",
+                ErrorCodes.CONTRACT_INITIALIZATION_FAILED
+            );
         }
+
+        if (!description || !ipfsHash) {
+            throw new AppError(
+                "Description and IPFS hash are required",
+                ErrorCodes.UPLOAD_FAILED
+            );
+        }
+
+        // Get the current gas price and fee data
+        const feeData = await provider.getFeeData();
         
-        const tx = await contract.addRecord(description, ipfsHash);
+        // Calculate appropriate gas fees
+        const maxFeePerGas = feeData.maxFeePerGas ? 
+            feeData.maxFeePerGas * BigInt(2) : // Double the current max fee
+            ethers.parseUnits("50", "gwei"); // Default to 50 gwei if not available
+
+        const maxPriorityFeePerGas = feeData.maxPriorityFeePerGas ?
+            feeData.maxPriorityFeePerGas * BigInt(2) : // Double the current priority fee
+            ethers.parseUnits("2", "gwei"); // Default to 2 gwei if not available
+
+        // Create transaction with appropriate gas settings
+        const tx = await contract.addRecord(description, ipfsHash, {
+            gasLimit: 500000, // Set a reasonable gas limit
+            maxFeePerGas: maxFeePerGas,
+            maxPriorityFeePerGas: maxPriorityFeePerGas
+        });
+
+        // Wait for transaction to be mined
         await tx.wait();
-        
         return true;
     } catch (error) {
-        console.error("Error adding record to blockchain:", error);
-        alert(error.message || "Error adding record to blockchain");
-        return false;
+        if (error.code === 4001) {
+            throw new AppError(
+                "Transaction was rejected by user",
+                ErrorCodes.USER_REJECTED,
+                error
+            );
+        }
+        if (error.message?.includes("network")) {
+            throw new AppError(
+                "Network error. Please check your connection and try again.",
+                ErrorCodes.NETWORK_ERROR,
+                error
+            );
+        }
+        if (error.message?.includes("insufficient funds")) {
+            throw new AppError(
+                "Insufficient funds for transaction. Please ensure you have enough Sepolia ETH.",
+                ErrorCodes.UPLOAD_FAILED,
+                error
+            );
+        }
+        throw new AppError(
+            "Failed to upload record to blockchain",
+            ErrorCodes.UPLOAD_FAILED,
+            error
+        );
     }
 };
 
 export const fetchRecordsFromBlockchain = async () => {
     try {
         if (!contract) {
-            const initialized = await initializeContract();
-            if (!initialized) {
-                throw new Error("Failed to initialize contract");
-            }
+            throw new AppError(
+                "Contract not initialized. Please connect your wallet first.",
+                ErrorCodes.CONTRACT_INITIALIZATION_FAILED
+            );
         }
-        
+
         const records = await contract.getRecords();
         return records;
     } catch (error) {
-        console.error("Error fetching records from blockchain:", error);
-        alert(error.message || "Error fetching records from blockchain");
-        return [];
+        if (error.message?.includes("network")) {
+            throw new AppError(
+                "Network error. Please check your connection and try again.",
+                ErrorCodes.NETWORK_ERROR,
+                error
+            );
+        }
+        throw new AppError(
+            "Failed to fetch records from blockchain",
+            ErrorCodes.RECORD_FETCH_FAILED,
+            error
+        );
     }
 }; 
